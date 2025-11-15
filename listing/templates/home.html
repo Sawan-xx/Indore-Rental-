@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Indore Rentals</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+</head>
+
+<body>
+<header>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="#">Room Rental</a>
+        <div>
+
+  </div>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+              data-bs-target="#mainNavbar" aria-controls="mainNavbar"
+              aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="mainNavbar">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link active" href="{% url 'home' %}">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'account' %}">Profile</a></li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="servicesDropdown" role="button"
+               data-bs-toggle="dropdown" aria-expanded="false">Services</a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#">Bookings</a></li>
+              <li><a class="dropdown-item" href="#">My Rooms </a></li>
+              <li><hr class="dropdown-divider"></li>
+<li class="nav-item">
+notification
+</li>
+            </ul>
+          </li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'About' %}">About US</a></li>
+        </ul>
+
+        <form class="d-flex me-3" method="GET" action="{% url 'search' %}">
+          <input class="form-control me-2" type="search" placeholder="Search rooms"
+                 aria-label="Search" name="query">
+          <button class="btn btn-outline-primary" type="submit">Search</button>
+        </form>
+
+        <ul class="navbar-nav mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="{% url 'register' %}">Register</a></li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#"
+               id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <img src="https://via.placeholder.com/28" alt="avatar"
+                   class="rounded-circle me-2" width="28" height="28">
+              <span class="d-none d-lg-inline">Account</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              {% if request.session.username %}
+                <li><a class="dropdown-item" href="{% url 'account' %}">{{ request.session.username }}</a></li>
+              {% else %}
+                <li><a class="dropdown-item" href="#">Profile</a></li>
+              {% endif %}
+              <li><a class="dropdown-item" href="{% url 'booking' %}">Bookings</a></li>
+              <li><hr class="dropdown-divider"></li>
+              {% if request.session.username %}
+                <li><a class="dropdown-item text-danger" href="{% url 'logout_as' %}">Logout</a></li>
+              {% else %}
+                <li><a class="dropdown-item text-danger" href="{% url 'login_as' %}">Login</a></li>
+              {% endif %}
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>
+
+{% block data %}
+<div class="container my-4">
+
+  <!-- Filter Section -->
+  <div class="accordion mb-4" id="filterAccordion">
+    <div class="accordion-item shadow-sm">
+      <h2 class="accordion-header" id="headingFilters">
+        <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseFilters" aria-expanded="false" aria-controls="collapseFilters">
+          🔎 Filter Rooms
+        </button>
+      </h2>
+      <div id="collapseFilters" class="accordion-collapse collapse" aria-labelledby="headingFilters">
+        <div class="accordion-body">
+          <form method="GET" class="row g-3" action="{% url 'filter' %}">
+            <div class="col-md-4">
+              <label for="location" class="form-label">Location</label>
+              <input type="text" class="form-control" name="location" id="location"
+                     placeholder="Enter area" value="{{ request.GET.location }}">
+            </div>
+
+            <div class="col-md-4">
+              <label for="price_min" class="form-label">Min Price</label>
+              <input type="number" class="form-control" name="price_min" id="price_min"
+                     placeholder="₹1000" value="{{ request.GET.price_min }}">
+            </div>
+            <div class="col-md-4">
+              <label for="price_max" class="form-label">Max Price</label>
+              <input type="number" class="form-control" name="price_max" id="price_max"
+                     placeholder="₹15000" value="{{ request.GET.price_max }}">
+            </div>
+
+            <div class="col-md-4">
+              <label for="room_type" class="form-label">Room Type</label>
+              <select name="room_type" id="room_type" class="form-select">
+                <option value="">All</option>
+                <option value="single" {% if request.GET.room_type == "single" %}selected{% endif %}>Single</option>
+                <option value="shared" {% if request.GET.room_type == "shared" %}selected{% endif %}>Shared</option>
+                <option value="family" {% if request.GET.room_type == "family" %}selected{% endif %}>Family</option>
+              </select>
+            </div>
+
+            <div class="col-md-4">
+              <label for="available" class="form-label">Availability</label>
+              <select name="available" id="available" class="form-select">
+                <option value="">All</option>
+                <option value="Available" {% if request.GET.available == "Available" %}selected{% endif %}>Available</option>
+                <option value="Not Available" {% if request.GET.available == "Not Available" %}selected{% endif %}>Not Available</option>
+              </select>
+            </div>
+
+            <div class="col-12 text-end">
+              <button type="submit" class="btn btn-primary">Apply Filters</button>
+              <a href="{% url 'home' %}" class="btn btn-secondary">Reset</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h1 class="text-center mb-4">Available Rooms</h1>
+
+  <div class="text-center mb-4">
+    <a href="{% url 'home' %}" class="btn btn-info text-white">Show All</a>
+  </div>
+
+  <!-- Rooms Grid -->
+  <div class="row g-4">
+    {% for room in rooms %}
+    <div class="col-sm-6 col-md-4 col-lg-3">
+      <div class="card h-100 shadow-sm">
+        {% if room.images.first %}
+        <img src="{{ room.images.first.image.url }}" class="card-img-top" alt="{{ room.title }}">
+        {% else %}
+        <img src="https://via.placeholder.com/300x200?text=No+Image" class="card-img-top" alt="No Image">
+        {% endif %}
+
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title">{{ room.title }}</h5>
+          <p class="card-text mb-1"><strong>₹{{ room.price_per_month }}</strong></p>
+
+      {% if room.availability == "Available" or room.availability == "available" %}
+            <span class="badge bg-success mb-2">Available</span>
+          {% else %}
+            <span class="badge bg-danger mb-2">Not Available</span>
+          {% endif %}
+
+          <p class="card-text text-muted small">{{ room.address }}</p>
+
+          <a href="{% url 'room_detail' room.pk %}" class="btn btn-primary mt-auto">More Detail</a>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center">
+      <div class="alert alert-warning">No rooms found.</div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Pagination Section -->
+  {% if rooms.has_other_pages %}
+  <nav aria-label="Page navigation" class="mt-5">
+    <ul class="pagination justify-content-center">
+      {% if rooms.has_previous %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ rooms.previous_page_number }}" aria-label="Previous">
+          <span aria-hidden="true">&laquo; Previous</span>
+        </a>
+      </li>
+      {% else %}
+      <li class="page-item disabled">
+        <span class="page-link">&laquo; Previous</span>
+      </li>
+      {% endif %}
+
+      <li class="page-item disabled">
+        <span class="page-link">Page {{ rooms.number }} of {{ rooms.paginator.num_pages }}</span>
+      </li>
+
+      {% if rooms.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ rooms.next_page_number }}" aria-label="Next">
+          <span aria-hidden="true">Next &raquo;</span>
+        </a>
+      </li>
+      {% else %}
+      <li class="page-item disabled">
+        <span class="page-link">Next &raquo;</span>
+      </li>
+      {% endif %}
+    </ul>
+  </nav>
+  {% endif %}
+</div>
+{% endblock data %}
+
+<footer class="bg-light py-3 mt-5 text-center text-muted">
+  © 2025 Indore Rentals | All rights reserved
+</footer>
+</body>
+<script>
+  // Function to fetch unread notification count
+  function fetchNotifications() {
+    fetch("/notifications/unread/")
+      .then(res => res.json())
+      .then(data => {
+        const countEl = document.getElementById("notif-count");
+        countEl.innerText = data.count;
+      })
+      .catch(err => console.error("Error fetching notifications:", err));
+  }
+
+  // Poll every 5 seconds
+  setInterval(fetchNotifications, 5000);
+  fetchNotifications();
+</script>
+
+</html>

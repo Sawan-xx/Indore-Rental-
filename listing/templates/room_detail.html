@@ -1,0 +1,100 @@
+{% extends 'home.html' %}
+{% block data %}
+
+<div class="container py-5">
+
+  <!-- ===== Room Header ===== -->
+  <div class="text-center mb-5">
+    <h2 class="fw-bold text-primary">{{ room.title }}</h2>
+    <p class="text-muted fs-5 mb-0">
+      <i class="bi bi-geo-alt-fill text-danger"></i> {{ room.address }}
+    </p>
+  </div>
+
+  <!-- ===== Room Overview ===== -->
+  <div class="card mb-5 shadow-sm border-0">
+    <div class="row g-0">
+      <div class="col-lg-6">
+        {% if room.images.first %}
+          <img src="{{ room.images.first.image.url }}" alt="{{ room.title }}"
+               class="img-fluid rounded-start w-100" style="height: 100%; object-fit: cover;">
+        {% else %}
+          <img src="https://via.placeholder.com/600x400?text=No+Image" 
+               class="img-fluid rounded-start w-100" alt="No Image">
+        {% endif %}
+      </div>
+
+      <div class="col-lg-6">
+        <div class="card-body">
+          <h4 class="card-title text-primary fw-semibold">{{ room.title }}</h4>
+          <p class="mb-2"><i class="bi bi-person-badge-fill text-primary"></i> 
+            <strong>Owner:</strong> {{ room.Owner.username }}
+          </p>
+          <p class="mb-2"><i class="bi bi-currency-rupee text-success"></i> 
+            <strong>Rent:</strong> ₹{{ room.price_per_month }} / month
+          </p>
+          <p class="card-text text-muted mt-3">{{ room.description|default:"No description provided." }}</p>
+
+
+
+  
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Room Gallery ===== -->
+  <div class="mb-5">
+    <h4 class="text-center text-primary mb-4 fw-semibold">Room Gallery</h4>
+    <div class="row g-3">
+      {% for img in room.images.all %}
+        <div class="col-6 col-md-4 col-lg-3">
+          <div class="card border-0 shadow-sm">
+            <img src="{{ img.image.url }}" class="card-img-top rounded" 
+                 alt="{{ room.title }}" style="height: 200px; object-fit: cover;">
+          </div>
+        </div>
+      {% empty %}
+        <div class="col-12 text-center">
+          <div class="alert alert-warning">No images available.</div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- ===== Booking Form ===== -->
+  <div class="card shadow-sm border-0 mb-5">
+    <div class="card-body">
+      <h4 class="text-center text-primary mb-4 fw-semibold">Book This Room</h4>
+      <form method="POST" action="{% url 'book_room' room.id %}">
+        {% csrf_token %}
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Start Date</label>
+            <input type="date" name="start_date" class="form-control" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">End Date</label>
+            <input type="date" name="end_date" class="form-control" required>
+          </div>
+        </div>
+        <div class="text-center mt-4">
+          <button type="submit" class="btn btn-success px-5">
+            <i class="bi bi-calendar-check-fill me-1"></i> Confirm Booking
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== Back Button ===== -->
+  <div class="text-center">
+    <a href="{% url 'home' %}" class="btn btn-outline-primary px-4">
+      <i class="bi bi-arrow-left"></i> Back to Home
+    </a>
+  </div>
+
+</div>
+
+{% endblock data %}

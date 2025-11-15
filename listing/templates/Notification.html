@@ -1,0 +1,15 @@
+{% extends 'home.html' %}
+
+
+{% block data %}
+
+
+{% for n in notifi  %}
+<h1>{{n.message}}</h1>
+
+    
+{% endfor %}
+    
+    
+{% endblock data %}
+    

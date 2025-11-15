@@ -1,0 +1,155 @@
+{% extends 'home.html' %}
+
+{% block data %}
+<body class="bg-light py-5">
+
+  <div class="container d-flex justify-content-center align-items-center mt-3">
+    <div class="col-md-8 col-lg-6">
+      <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-body p-4">
+          <h3 class="text-center mb-4 fw-bold text-primary">Update Room Details</h3>
+
+          <form method="POST" action="{% url 'up_room' room.pk %}" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!-- Hidden Owner Field -->
+            {% if user.is_authenticated %}
+              <input type="hidden" name="owner" value="{{ user.id }}">
+            {% endif %}
+
+            <!-- Room Title -->
+            <div class="mb-3">
+              <label for="title" class="form-label fw-semibold">Room Title</label>
+              <input 
+                type="text" 
+                class="form-control form-control-lg rounded-3" 
+                id="title" 
+                name="title" 
+                value="{{ room.title }}" 
+                placeholder="Enter room title" 
+                required>
+            </div>
+
+            <!-- Description -->
+            <div class="mb-3">
+              <label for="description" class="form-label fw-semibold">Description</label>
+              <textarea 
+                class="form-control form-control-lg rounded-3" 
+                id="description" 
+                name="description" 
+                rows="4" 
+                placeholder="Describe your room" 
+                required>{{ room.description }}</textarea>
+            </div>
+
+            <!-- Price per Month -->
+            <div class="mb-3">
+              <label for="price" class="form-label fw-semibold">Price per Month (₹)</label>
+              <input 
+                type="number" 
+                class="form-control form-control-lg rounded-3" 
+                id="price" 
+                name="price" 
+                min="0" 
+                value="{{ room.price_per_month }}" 
+                placeholder="Enter price" 
+                required>
+            </div>
+
+            <!-- Address -->
+            <div class="mb-3">
+              <label for="address" class="form-label fw-semibold">Address</label>
+              <input 
+                type="text" 
+                class="form-control form-control-lg rounded-3" 
+                id="address" 
+                name="address" 
+                value="{{ room.address }}" 
+                placeholder="Enter room address" 
+                required>
+            </div>
+               <div class="mb-3">
+              <label for="availability" class="form-label fw-semibold">availabiliy</label>
+                
+<select name="availability" id="availability" required>
+    <option value=""selected>select the availability</option>
+    <option value="Available">Available</option>
+    <option value="Not Available">Not Available</option>  
+</select>
+               </div>
+            <!-- Existing Images -->
+            {% if room.images.all %}
+              <div class="mb-4">
+                <label class="form-label fw-semibold">Existing Images</label>
+                <div class="d-flex flex-wrap gap-3">
+                  {% for img in room.images.all %}
+                    <div class="position-relative">
+                      <img src="{{ img.image.url }}" 
+                           class="rounded-3 shadow-sm" 
+                           style="width: 120px; height: 100px; object-fit: cover;">
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+            {% endif %}
+
+            <!-- Upload New Images -->
+            <div class="mb-3">
+              <label for="images" class="form-label fw-semibold">Upload New Images (optional)</label>
+              <input 
+                type="file" 
+                name="images" 
+                id="images" 
+                class="form-control" 
+                multiple 
+                accept="image/*">
+            </div>
+
+            <!-- Preview Area -->
+            <div id="preview-container" class="d-flex flex-wrap gap-3 mt-3"></div>
+
+            <!-- Submit Button -->
+            <div class="d-grid mt-4">
+              <button type="submit" class="btn btn-primary btn-lg rounded-3 shadow-sm">
+                Update Room
+              </button>
+            </div>
+          </form>
+
+          <!-- Back Button  -->
+          <div class="text-center mt-3">
+            <a href="{% url 'account' %}" class="btn btn-outline-secondary rounded-3">
+              <i class="bi bi-arrow-left"></i> Cancel
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript for Image Preview
+  <script>
+    document.getElementById('images').addEventListener('change', function(event) {
+      const previewContainer = document.getElementById('preview-container');
+      previewContainer.innerHTML = ''; // clear old previews
+
+      const files = event.target.files;
+      if (files) {
+        [...files].forEach(file => {
+          const reader = new FileReader();
+          reader.onload = e => {
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.classList.add('rounded-3', 'shadow-sm');
+            img.style.width = '120px';
+            img.style.height = '100px';
+            img.style.objectFit = 'cover';
+            previewContainer.appendChild(img);
+          };
+          reader.readAsDataURL(file);
+        });
+      }
+    });
+  </script>
+</body>
+{% endblock data %}

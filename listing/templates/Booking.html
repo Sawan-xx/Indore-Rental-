@@ -1,0 +1,52 @@
+{% extends 'home.html' %}
+
+{% block data %}
+
+<div class="container my-5">
+    {% if user %}
+        <h2 class="text-center mb-4">My Bookings</h2>
+
+        {% if bookings %}
+            <div class="row">
+                {% for b in bookings %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card shadow-sm border-0 rounded-3 h-100">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary mb-2">{{ b.room.title }}</h5>
+                            <p class="card-text mb-1"><strong>Location:</strong> {{ b.room.address }}</p>
+                            <p class="card-text mb-1"><strong>Booked By:</strong> {{ b.user.username }}</p>
+                            <p class="card-text mb-1"><strong>Start Date:</strong> {{ b.start_Date }}</p>
+                            <p class="card-text mb-1"><strong>End Date:</strong> {{ b.end_Date }}</p>
+                            <p class="card-text mb-1"><strong>Status:</strong> 
+                                <span class="badge {% if b.status == 'Approved' %}bg-success{% elif b.status == 'Pending' %}bg-warning text-dark{% else %}bg-danger{% endif %}">
+                                    {{ b.status }}
+                                </span>
+                            </p>
+                            <p class="card-text"><small class="text-muted">Booked on {{ b.created_at|date:"M d, Y" }}</small></p>
+                        </div>
+                        <div class="card-footer bg-transparent border-0 d-flex justify-content-between">
+                            <a href="{% url 'room_detail' b.room.id %}" class="btn btn-outline-primary btn-sm">View Room</a>
+                            <form method="POST" action="{% url 'book_can' b.id %}">
+                                {% csrf_token %}
+                            <button class="btn btn-outline-danger btn-sm">Cancel</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info text-center">
+                You don’t have any bookings yet.
+            </div>
+        {% endif %}
+    
+    {% else %}
+        <div class="text-center mt-5">
+            <p class="mb-3">Please login to view your bookings.</p>
+            <a href="{% url 'login_as' %}" class="btn btn-primary">Login</a>
+        </div>
+    {% endif %}
+</div>
+
+{% endblock data %}
